@@ -572,7 +572,13 @@
         const img = new Image();
 
         img.onload = () => {
-            const scale = 4; // High quality
+            // Adjust scale dynamically to prevent massive canvases
+            let scale = 4;
+            const MAX_DIMENSION = 8000;
+            if (w * scale > MAX_DIMENSION || h * scale > MAX_DIMENSION) {
+                scale = Math.max(1, Math.min(MAX_DIMENSION / w, MAX_DIMENSION / h, 4));
+            }
+
             const canvas = document.createElement('canvas');
             canvas.width = w * scale;
             canvas.height = h * scale;
@@ -626,8 +632,8 @@
                 const x = (pageWidth - imgWidth) / 2;
                 const y = titleOffset;
 
-                const imgData = canvas.toDataURL('image/png', 1.0);
-                pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
+                const imgData = canvas.toDataURL('image/jpeg', 0.90);
+                pdf.addImage(imgData, 'JPEG', x, y, imgWidth, imgHeight);
 
                 // Footer
                 pdf.setFont('helvetica', 'normal');
